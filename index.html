@@ -4,20 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ছত্তিশ সমাজ সংস্কার যুব সংঘ</title>
-    
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/jpg" href="https://i.ibb.co.com/My6Mn9TC/IMG-20260118-WA0000.jpg">
     <link rel="apple-touch-icon" href="https://i.ibb.co.com/My6Mn9TC/IMG-20260118-WA0000.jpg">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#1a5f7a">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
     <style>
         :root { --primary: #1a5f7a; --secondary: #ffd700; --accent: #ff4b2b; --bg: #f4f7f6; }
         body { font-family: 'Hind Siliguri', sans-serif; background-color: var(--bg); margin: 0; padding: 0; }
@@ -26,3 +23,86 @@
         .nav-item-custom { padding: 10px 18px; color: #555; font-weight: bold; cursor: pointer; transition: 0.3s; margin: 0 5px; border-radius: 12px; white-space: nowrap; }
         .nav-item-custom.active { background: var(--secondary); color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .notice-board { background: #fff3cd; color: #856404; padding: 8px; font-weight: bold; border-bottom: 2px solid #ffeeba; text-align: center; font-size: 14px; }
+        .floating-donate { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(45deg, #f093fb, #f5576c); color: white; padding: 12px 25px; border-radius: 50px; display: flex; align-items: center; gap: 10px; font-weight: bold; box-shadow: 0 10px 20px rgba(0,0,0,0.2); z-index: 1000; text-decoration: none; border: 2px solid white; animation: pulse 2s infinite; }
+        .page-content { display: none; padding: 20px 15px; animation: fadeInUp 0.5s ease; }
+        .active-page { display: block; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .activity-card { border-radius: 20px; overflow: hidden; background: #fff; box-shadow: 0 8px 25px rgba(0,0,0,0.1); margin-bottom: 25px; }
+        .activity-img { width: 100%; height: 220px; object-fit: cover; border-bottom: 4px solid var(--primary); }
+        .list-card { background: white; border-radius: 20px; padding: 12px; margin-bottom: 15px; border-left: 8px solid; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .advisor-item { border-left-color: #ffc107; } .member-item { border-left-color: #0dcaf0; } .blood-item { border-left-color: #dc3545; }
+        .member-img { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid #eee; margin-right: 15px; }
+        .fin-grid { display: grid; grid-gap: 10px; grid-template-columns: repeat(3, 1fr); margin-bottom: 20px; }
+        .fin-card { border-radius: 18px; color: white; padding: 15px 5px; text-align: center; }
+        .bg-inc { background: #28a745; } .bg-exp { background: #dc3545; } .bg-bal { background: #1a5f7a; }
+    </style>
+</head>
+<body>
+<div class="notice-board"><marquee id="noticeText">তথ্য লোড হচ্ছে...</marquee></div>
+<header class="header-top shadow">
+    <h2 class="fw-bold m-0" style="font-size: 22px;">ছত্তিশ সমাজ সংস্কার যুব সংঘ</h2>
+    <p class="m-0 small opacity-75">খয়রাতি মহল্লা, ছত্তিশ, ফেঞ্চুগঞ্জ, সিলেট</p>
+</header>
+<nav class="nav-container shadow-sm">
+    <div class="nav-item-custom active" onclick="changePage(this, 'home')">হোম</div>
+    <div class="nav-item-custom" onclick="changePage(this, 'reg')">রেজিস্ট্রেশন</div>
+    <div class="nav-item-custom" onclick="changePage(this, 'list')">উপদেষ্টা ও সদস্য</div>
+    <div class="nav-item-custom" onclick="changePage(this, 'blood')">রক্তদাতা</div>
+    <div class="nav-item-custom" onclick="changePage(this, 'finance')">আয়-ব্যয়</div>
+</nav>
+<a href="tel:01727825624" class="floating-donate"><i class="fas fa-heart"></i> ডোনেট করুন</a>
+<div id="home" class="page-content active-page container"><div id="activityDisplay"></div></div>
+<div id="reg" class="page-content container">
+    <div class="card p-4 shadow-sm border-0 rounded-4 mb-5">
+        <form id="regForm">
+            <input type="text" id="uName" class="form-control mb-2" placeholder="পূর্ণ নাম" required>
+            <input type="number" id="uPhone" class="form-control mb-2" placeholder="মোবাইল নম্বর" required>
+            <select id="uBlood" class="form-select mb-2" required><option value="">রক্তের গ্রুপ</option><option>A+</option><option>B+</option><option>O+</option><option>AB+</option><option>A-</option><option>B-</option><option>O-</option><option>AB-</option></select>
+            <select id="uRole" class="form-select mb-2" required><option value="">পদবী</option><option value="সদস্য">সদস্য</option><option value="উপদেষ্টা">উপদেষ্টা</option></select>
+            <input type="file" id="uPhoto" class="form-control mb-3" accept="image/*" required>
+            <button type="submit" id="regBtn" class="btn btn-primary w-100 fw-bold">জমা দিন</button>
+        </form>
+    </div>
+    <div class="text-center">
+        <div class="input-group mb-2 mx-auto" style="max-width: 400px;"><input type="number" id="searchPhone" class="form-control" placeholder="ফোন নম্বর"><button class="btn btn-success" onclick="getDigitalID()">সার্চ</button></div>
+        <div id="idCardResult" style="display:none; margin-top: 20px;">
+            <div id="downloadArea" style="max-width: 320px; margin: auto; border: 3px solid var(--primary); border-radius: 20px; background: #fff; padding-bottom: 15px;">
+                <div style="background: var(--secondary); padding: 6px; text-align: center;">আইডি কার্ড</div>
+                <div style="background: var(--primary); color: white; padding: 15px 10px; text-align: center;"><h6>ছত্তিশ সমাজ সংস্কার যুব সংঘ</h6></div>
+                <div style="padding: 20px; text-align: center;">
+                    <img id="resImg" src="" style="width: 105px; height: 105px; border-radius: 50%; border: 4px solid var(--primary); object-fit: cover; margin-bottom: 5px;">
+                    <h5 id="resName" class="fw-bold m-0" style="color: var(--primary);"></h5>
+                    <span id="resRole" class="badge bg-secondary mb-2" style="font-weight: normal;"></span>
+                    <p class="text-danger fw-bold m-0">রক্ত: <span id="resBlood"></span></p>
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 10px; font-size: 10px; text-align: left; border-left: 5px solid var(--primary);"><strong>আইডি:</strong> <span id="resIDText"></span></div>
+                    <img id="resQR" src="" style="width: 50px; height: 50px; margin-top: 10px;">
+                </div>
+            </div>
+            <button class="btn btn-dark w-100 mt-3" style="max-width: 320px;" onclick="downloadIDCard()">ডাউনলোড PNG</button>
+        </div>
+    </div>
+</div>
+<div id="list" class="page-content container"><h5 class="fw-bold ps-2 mb-3">উপদেষ্টা মণ্ডলী</h5><div id="advisorListDisplay"></div><h5 class="fw-bold ps-2 mt-4 mb-3">সদস্যবৃন্দ</h5><div id="memberListDisplay"></div></div>
+<div id="blood" class="page-content container"><select id="bloodFilter" class="form-select border-danger mb-3" onchange="filterBlood()"><option value="all">সকল গ্রুপ</option><option>A+</option><option>B+</option><option>O+</option><option>AB+</option><option>A-</option><option>B-</option><option>O-</option><option>AB-</option></select><div id="bloodDonorDisplay"></div></div>
+<div id="finance" class="page-content container"><div class="fin-grid"><div class="fin-card bg-inc" onclick="showFinanceDetails('income')"><h6>আয়</h6><h5 id="tInc">০ ৳</h5></div><div class="fin-card bg-exp" onclick="showFinanceDetails('expense')"><h6>ব্যয়</h6><h5 id="tExp">০ ৳</h5></div><div class="fin-card bg-bal" onclick="showFinanceDetails('all')"><h6>ফান্ড</h6><h5 id="cBal">০ ৳</h5></div></div><canvas id="financeChart" style="max-height: 250px;"></canvas></div>
+<script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzR9TP45aUx8Swh_aRiL5H7A_5HmMeXz4WM6N7-PnLwl0l6_Eni-pWm10xkevb6WERm/exec';
+    const IMGBB_KEY = 'e8304c45ff35101f03b3d6da55a8edb1';
+    let rawFinanceData = []; let allMembersData = [];
+    function changePage(el, id) { document.querySelectorAll('.nav-item-custom').forEach(i => i.classList.remove('active')); el.classList.add('active'); document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active-page')); document.getElementById(id).classList.add('active-page'); }
+    async function loadAll() {
+        try {
+            const nR = await fetch(`${SCRIPT_URL}?action=getNotices`); const nD = await nR.json(); if(nD.length > 0) document.getElementById('noticeText').innerText = nD[nD.length - 1][1];
+            const aR = await fetch(`${SCRIPT_URL}?action=getActivities`); const aD = await aR.json(); let aH = ''; aD.forEach(r => { aH += `<div class="activity-card"><img src="${r[2]}" class="activity-img"><div style="padding:15px;"><h6 class="fw-bold m-0">${r[1]}</h6></div></div>`; }); document.getElementById('activityDisplay').innerHTML = aH;
+            const mR = await fetch(`${SCRIPT_URL}?action=getMember&phone=all`); allMembersData = await mR.json(); renderMembers(allMembersData); filterBlood();
+            const fR = await fetch(`${SCRIPT_URL}?action=getFinance`); rawFinanceData = await fR.json(); renderFinanceSummary();
+        } catch (e) {}
+    }
+    function renderMembers(data) { let advH = ''; let memH = ''; data.forEach(i => { let card = `<div class="list-card d-flex align-items-center justify-content-between ${i.role === 'উপদেষ্টা' ? 'advisor-item' : 'member-item'}"><div class="d-flex align-items-center"><img src="${i.photo}" class="member-img"><div><h6 class="fw-bold">${i.name}</h6><span class="badge bg-danger">${i.blood}</span></div></div><a href="tel:${i.phone}" class="btn btn-success rounded-circle"><i class="fas fa-phone-alt"></i></a></div>`; if(i.role === 'উপদেষ্টা') advH += card; else memH += card; }); document.getElementById('advisorListDisplay').innerHTML = advH; document.getElementById('memberListDisplay').innerHTML = memH; }
+    function filterBlood() { const blood = document.getElementById('bloodFilter').value; let filtered = blood === 'all' ? allMembersData : allMembersData.filter(m => m.blood === blood); let h = ''; filtered.forEach(i => { h += `<div class="list-card blood-item d-flex align-items-center justify-content-between"><div class="d-flex align-items-center"><img src="${i.photo}" class="member-img"><div><h6 class="fw-bold">${i.name}</h6><span class="badge bg-danger">${i.blood}</span></div></div><a href="tel:${i.phone}" class="btn btn-success rounded-circle"><i class="fas fa-phone-alt"></i></a></div>`; }); document.getElementById('bloodDonorDisplay').innerHTML = h; }
+    async function getDigitalID() { const ph = document.getElementById('searchPhone').value; const r = await fetch(`${SCRIPT_URL}?action=getMember&phone=${ph}`); const d = await r.json(); if(d.name) { document.getElementById('resName').innerText = d.name; document.getElementById('resBlood').innerText = d.blood; document.getElementById('resRole').innerText = d.role; document.getElementById('resIDText').innerText = "CSS-2026-" + ph.slice(-3); document.getElementById('resQR').src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=CSS-ID-${ph}`; document.getElementById('resImg').src = d.photo; document.getElementById('idCardResult').style.display = 'block'; } }
+    function downloadIDCard() { html2canvas(document.getElementById('downloadArea'), { useCORS: true, scale: 3 }).then(c => { const l = document.createElement('a'); l.download = 'ID_Card.png'; l.href = c.toDataURL(); l.click(); }); }
+    window.onload = loadAll;
+</script>
+</body>
+</html>
